@@ -11,6 +11,12 @@ library(caret)
 library(pROC)
 library(ROCR)
 
+#NOTE: Must acquire the the following files:
+"newsarticles_article.csv"
+"newsarticles_article_categories.csv"
+"newsarticles_category.csv"
+
+
 "code in this section brings in the data and merges with other dfs from news_categorization db"
 #############
 
@@ -348,6 +354,11 @@ for(i in dflist){
 # stop time
 print(proc.time() - ptv)
 
+algorithm_summaries_detailed <- pm_df
+pm_df <- pm_df[-1,]
+ensemble_summaries_detailed <- all_measures_stacked
+all_measures_stacked <- all_measures_stacked[-1,]
+
 "Add vars to specify algorithm, preprocessing, number of features/terms used, and total positive/negative tags"
 algorithm_summaries_detailed <- algorithm_summaries_detailed %>% separate(col = Algorithm_name, into = c("model", "measure", "remove"), sep = "_")
 algorithm_summaries_detailed <- algorithm_summaries_detailed %>% select(-one_of("measure", "remove"))
@@ -378,7 +389,6 @@ algorithm_summaries_detailed$total_positives <- add_crimes_positive[algorithm_su
 add_crimes_negative <- setNames(tag_totals$total_negatives, tag_totals$crime_category) #new, old
 algorithm_summaries_detailed$total_negatives <- algorithm_summaries_detailed$crime_category
 algorithm_summaries_detailed$total_negatives <- add_crimes_negative[algorithm_summaries_detailed$total_negatives] 
-algorithm_summaries_detailed<-algorithm_summaries_detailed[-which(row.names(algorithm_summaries_detailed)=="1"),]
 
 
 "Add vars to specify preprocessing, number of features/terms used, and total positive/negative tags"
@@ -408,5 +418,5 @@ ensemble_summaries_detailed$total_positives <- add_crimes_positive[ensemble_summ
 add_crimes_negative <- setNames(tag_totals$total_negatives, tag_totals$crime_category) #new, old
 ensemble_summaries_detailed$total_negatives <- ensemble_summaries_detailed$crime_category
 ensemble_summaries_detailed$total_negatives <- add_crimes_negative[ensemble_summaries_detailed$total_negatives] 
-ensemble_summaries_detailed<-ensemble_summaries_detailed[-which(row.names(ensemble_summaries_detailed)=="1"),]
+
 
